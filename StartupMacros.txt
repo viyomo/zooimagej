@@ -1,0 +1,144 @@
+// Autor: Lic. Vivian Yorojo Moreno
+ 
+// Descripción del script: el siguiente script de Imagej automatiza de manera parcial la toma de medidas de zooplancton de lagunas pampásicas.
+//                                     La calibración de las imágenes es para resolución 2584x1936 pixels, la misma fue realizada para objetivos 4X y 10X (media
+//                                     de 20 mediciones en  reglilla de 1 mm marca Olympus, modelo  0B-M 1/100 ), dichas medias son guardadas en las variables 
+//                                     globales X4 y X10, respectivamente.
+//Variables:        
+//               X4 = relación pixel/mm con objetivo 4X (promedio de 20 mediciones)
+//               X10 = relación pixel/mm con objetivo 10X (promedio de 20 mediciones)
+//               grupo = grupo de zooplancton
+// Licencia: GPL
+
+var X4 = 882.44;
+var X10 =2191.02;
+var laguna = newArray("Vitel", "La Salada", "San Lorenzo");
+var def_laguna;
+var def_objetivo;
+var fecha = "dd/mm/aaaa"; 
+var objetivo = newArray("4X", "10X");
+var def_muestra;
+var def_alicuota;
+
+var filo = newArray("artropoda", "rotifera", "Desconocido");
+
+var especie = newArray("Cyclopoida", "Calanoida", "Harpacticoida", "Keratella americana", "Keratella tropica", "Keratella lenzi", "Keratella cochlearis", "Brachionus caudatus","Brachionus havanaensis", "Brachionus calyciflorus", "Brachionus patulus", "Pompholyx sp.", "Polyarthra sp.", "Asplanchna brightwelli", "Filinia longiseta", "Filinia sp.", "Flia-Chidoridae", "Bosmina", "Diaphanosoma", "Ceriodaphnia", "Moina", "Cladocerito", "Daphnia", "Coronatella rectangula", "Asplanchna sp.", "Huevos de rotíferos", "Notholca sp.", "Brachionus angularis", "Lepadella sp.", "Coronatella poppei","Desconocido");
+
+var subclase = newArray("copepoda", "monogononta", "Desconocido");
+
+var clase = newArray("Desconocido");
+
+var superorden =newArray("cladocera", "Desconocido");
+
+var tamanio = newArray("nauplios", "copepodito", "juvenil", "adulto", "cladocerito", "huevos", "Desconocido", "NA");
+
+var familia = newArray("chidoridae", "Desconocido" );
+
+var grupo = newArray("Desconocido" );
+
+
+
+var def_filo = "Desconocido";
+var def_especie = "Desconocido";
+var def_familia = "Desconocido";
+var def_tamanio = "Desconocido";
+var def_subclase = "Desconocido";
+var def_clase = "Desconocido";
+var def_superorden = "Desconocido";
+var def_grupo = "Desconocido";
+
+macro "Datos de Muestreo [M]" {
+	if (nImages==0) {
+	    exit("No hay imágenes abiertas, abra una!!");
+	 }
+	Dialog.create("Lugar y fecha de muestreo");
+	Dialog.addChoice("Laguna:", laguna);
+	Dialog.addString("Fecha de Muestreo:", fecha);
+	Dialog.addChoice("Objetivo:", objetivo);
+	Dialog.show();
+	def_laguna = Dialog.getChoice();
+	fecha = Dialog.getString();
+	def_objetivo = Dialog.getChoice();
+	if (def_objetivo == "10X") {
+                            run("Set Scale...", "distance=X10 known=1000 pixel=1 unit=µm global");
+	}
+	else {
+	    run("Set Scale...", "distance=X4 known=1000 pixel=1 unit=µm global"); 
+	}
+}
+
+macro "Medición Zooplancton [m]" {
+
+	Dialog.create("Medición de Zooplancton");
+	Dialog.addString("Muestra:", def_muestra);
+	Dialog.addString("Alicuota:", def_alicuota);
+	Dialog.addChoice("Filo", filo, def_filo)
+	Dialog.addChoice("Clase:", clase, def_clase);
+	Dialog.addChoice("Subclase:", subclase, def_subclase);
+	Dialog.addChoice("Superorden:", superorden, def_superorden);
+	Dialog.addChoice("Familia:", familia, def_familia);	
+	Dialog.addChoice("Especie:", especie, def_especie);
+	Dialog.addChoice("Tamaño:", tamanio, def_tamanio);
+	Dialog.addChoice("Grupo:", grupo, def_grupo);
+	Dialog.show();
+
+	def_muestra = Dialog.getString();
+	def_alicuota = Dialog.getString();
+	def_filo = Dialog.getChoice();
+	def_clase = Dialog.getChoice();
+	def_subclase = Dialog.getChoice();
+	def_superorden = Dialog.getChoice();
+	def_familia = Dialog.getChoice();	
+	def_especie = Dialog.getChoice();	
+	def_tamanio = Dialog.getChoice();
+	def_grupo = Dialog.getChoice();
+	imagen = getTitle();
+
+	
+
+
+	setOption("Area", false);
+	setOption("Perimetro", false);
+	setOption("Display Label", false);
+	run("Set Measurements...", "add redirect=None decimal=2");
+	run("Measure");
+      
+
+	largo = getResult("Length", nResults-1)
+	if (largo < 300) {
+            categoria = "I";
+	}
+	else if (largo >= 300 && largo < 700){
+	    categoria = "II";
+	}
+	else {
+	    categoria = "III";
+	}
+
+	setResult("categoria" , nResults - 1, categoria);	
+	setResult("fecha" , nResults - 1, fecha);
+	setResult("laguna" , nResults - 1, def_laguna);
+	setResult("filo" , nResults - 1, def_filo);
+	setResult("clase" , nResults - 1, def_clase);
+	setResult("subclase" , nResults - 1, def_subclase);
+	setResult("superorden" , nResults - 1, def_superorden);
+	setResult("familia" , nResults - 1, def_familia);
+	setResult("especie" , nResults - 1, def_especie);
+	setResult("grupo" , nResults - 1, def_grupo);		
+	setResult("tamanio" , nResults - 1, def_tamanio);
+	setResult("muestra" , nResults - 1, def_muestra);
+	setResult("alicuota" , nResults - 1, def_alicuota);
+	setResult("objetivo" , nResults - 1, def_objetivo);
+	setResult("archivo_imágen" , nResults - 1, imagen);
+
+	updateResults();
+
+	getSelectionBounds(x1, y1, width, height);
+	setFont("Serif", 30 , "bold");
+	setColor(255,255,0);
+	
+	drawString(largo+" "+getInfo("micrometer.abbreviation"), x1, y1);
+	setForegroundColor(255, 255, 0);
+
+	run("Label");
+}
