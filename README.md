@@ -5,11 +5,12 @@ Macro de ImageJ para medir y clasificar zooplankton
 
 1. Abrir terminal
 
-````
+```
 git clone git@github.com:viyomo/zooimagej.git
 cd zooimage
 ./instalar
 ```
+
 # Uso:
 
 1. Abrir foto en imageJ.
