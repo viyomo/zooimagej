@@ -12,7 +12,7 @@
 
 var X4 = 882.44;
 var X10 =2191.02;
-var laguna = newArray("Vitel", "La Salada", "San Lorenzo");
+var laguna = newArray("Vitel", "La Salada", "San Lorenzo", "Melincue", "Otra");
 var def_laguna;
 var def_objetivo;
 var fecha = "dd/mm/aaaa"; 
